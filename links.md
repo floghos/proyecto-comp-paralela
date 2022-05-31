@@ -10,6 +10,11 @@ https://www.quora.com/What-is-the-most-efficient-way-to-represent-a-graph-with-m
 * C++ adjacency list graph implementation:
 https://www.techiedelight.com/graph-implementation-using-stl/
 
+* Graph visualizer & solver:
+https://graphonline.ru/en/create_graph_by_matrix
+
+* Random simple connected graph generation with given sparseness:
+https://stackoverflow.com/questions/2041517/random-simple-connected-graph-generation-with-given-sparseness
 
 * A* resources:
     * Wiki pseudocode: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
