@@ -79,7 +79,7 @@ int main(int argc, char const *argv[]) {
     fScore[0] = gScore[0] + h(v[0], v[n-1]);
 
     while (!openSet.empty()) {
-        current = openSet.top();
+        mynode current = openSet.top();
         if (current.goal) {
             //return reconstruct_path();
             return 0;
