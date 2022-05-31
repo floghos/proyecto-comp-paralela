@@ -6,7 +6,6 @@
 #include <map>
 #include <vector>
 
-
 using namespace std;
 
 typedef pair<double, int> p_di;
@@ -32,17 +31,12 @@ void reconstruct_path(int current, const vector<int> &cameFrom) {
     }
 
     //print pathf
+    cout << "Path found:";
     for (int i = path.size()-1; i >= 0; i--) {
         cout << " --> " << path[i];
     }
     cout << endl;
 }
-// function reconstruct_path(cameFrom, current)
-//     total_path := {current}
-//     while current in cameFrom.Keys:
-//         current := cameFrom[current]
-//         total_path.prepend(current)
-//     return total_path
 
 // The following representation was taken from
 // https://www.techiedelight.com/graph-implementation-using-stl/
@@ -75,10 +69,9 @@ public:
     }
 };
 
-void printGraph(Graph const &graph, int n)
-{
-    for (int i = 0; i < n; i++)
-    {
+void printGraph(Graph const &graph) {
+    int n = graph.adjList.size();
+    for (int i = 0; i < n; i++) {
         // print the current vertex number
         cout << i << " ——> ";
 
@@ -100,9 +93,33 @@ bool is_in_pq(int v, priority_queue<p_di, vector<p_di>, greater<p_di> > pq) {
     return false;
 }
 
+void adj_matrix_from_graph(Graph const &graph) {
+    int n = graph.adjList.size();
+    vector<vector<int>> adjMatrix = { {0} };
+    adjMatrix.resize(n, {0});
+
+    //creating adjacency matrix
+    for (int i = 0; i < n; i++) {
+        adjMatrix[i].resize(n, 0);
+
+        for (int v: graph.adjList[i]) {
+            adjMatrix[i][v] = 1;
+        }
+    }
+
+    //printing
+    for (int i = 0; i < n; i++) {
+        int j;
+        for (j = 0; j < n-1; j++) {
+            cout << adjMatrix[i][j] << ", ";
+        }
+        cout << adjMatrix[i][j] << endl;
+    }
+}
+
 int main(int argc, char const *argv[]) {
     //number of vertices
-    int n = 10;
+    int n = 6;
 
     // defining graph by edges
     vector<Edge> edges;
@@ -112,12 +129,15 @@ int main(int argc, char const *argv[]) {
         e = {i, d};
         edges.push_back(e);
     }
+
     // vector<Edge> edges =
     // {
     //     {0, 1}, {1, 2}, {2, 0}, {2, 1}, {3, 2}, {4, 5}, {5, 4}
     // };
+
     Graph graph(edges, n);
-    printGraph(graph, n);
+    printGraph(graph);
+    adj_matrix_from_graph(graph);
 
     // Defining vertices
 
