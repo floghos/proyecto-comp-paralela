@@ -5,6 +5,7 @@
 #include <queue>
 #include <map>
 #include <vector>
+#include <time.h>
 
 using namespace std;
 
@@ -118,8 +119,13 @@ void adj_matrix_from_graph(Graph const &graph) {
 }
 
 int main(int argc, char const *argv[]) {
-    //number of vertices
-    int n = 6;
+    srand(time(NULL));
+    // number of vertices
+    int n = 20;
+
+    // number of edges
+    // should go from 0 to n*(n-1)/2
+    int e = n * (n-1) / 8;
 
     // defining graph by edges
     vector<Edge> edges;
