@@ -23,7 +23,7 @@ double d(int a, int b) {
     return 1;
 }
 
-void reconstruct_path(int current, const vector<int> &cameFrom) {
+void reconstruct_path(int current, vector<int> const &cameFrom) {
     vector<int> path;
     path.push_back(current);
     while (cameFrom[current] != current) {
@@ -43,14 +43,14 @@ void reconstruct_path(int current, const vector<int> &cameFrom) {
 // https://www.techiedelight.com/graph-implementation-using-stl/
 // Data structure to store a graph edge
 struct Edge {
-    int src, dest;
+    int src, dest, w; // w stands for weight
 };
 
 // A class to represent a graph object
 class Graph {
 public:
     // a vector of vectors to represent an adjacency list
-    vector<vector<int>> adjList;
+    vector<vector<pair<int, int>>> adjList;
 
     // Graph Constructor
     Graph(vector<Edge> const &edges, int n)
@@ -62,10 +62,10 @@ public:
         for (auto &edge: edges)
         {
             // insert at the end
-            adjList[edge.src].push_back(edge.dest);
+            adjList[edge.src].push_back(make_pair(edge.dest, edge.w));
 
             // uncomment the following code for undirected graph
-            // adjList[edge.dest].push_back(edge.src);
+            adjList[edge.dest].push_back(make_pair(edge.src, edge.w));
         }
     }
 };
@@ -77,7 +77,7 @@ void printGraph(Graph const &graph) {
         cout << i << " ——> ";
 
         // print all neighboring vertices of a vertex `i`
-        for (int v: graph.adjList[i]) {
+        for (pair<int, int> v: graph.adjList[i]) {
             cout << v << " ";
         }
         cout << endl;
@@ -95,6 +95,8 @@ bool is_in_pq(int v, priority_queue<p_di, vector<p_di>, greater<p_di> > pq) {
 }
 
 void adj_matrix_from_graph(Graph const &graph) {
+    // I will assume all nodes are
+
     int n = graph.adjList.size();
     vector<vector<int>> adjMatrix = { {0} };
     adjMatrix.resize(n, {0});
@@ -103,8 +105,8 @@ void adj_matrix_from_graph(Graph const &graph) {
     for (int i = 0; i < n; i++) {
         adjMatrix[i].resize(n, 0);
 
-        for (int v: graph.adjList[i]) {
-            adjMatrix[i][v] = 1;
+        for (pair<int, int> v: graph.adjList[i]) {
+            adjMatrix[i][v.first] = v.second;
         }
     }
 
@@ -115,6 +117,33 @@ void adj_matrix_from_graph(Graph const &graph) {
             cout << adjMatrix[i][j] << ", ";
         }
         cout << adjMatrix[i][j] << endl;
+    }
+}
+
+void gen_rand_connected_graph(vector<vector<int>> list, int n) {
+    // returns adjacency list of a randomly generated connected graph
+}
+
+void gen_rand_edge_list (int num_e, int num_v, vector<Edge> &edges){
+    edges.resize(num_e);
+
+    int i = 0;
+    while(i < num_e) {
+        int weight = (rand() % 3) + 1;
+        edges[i] = { rand()%num_v, rand()%num_v, weight };
+
+        // check for loops or repeated edges (undirected)
+        if(edges[i].src == edges[i].dest)
+            continue;
+        else {
+            for(int j = 0; j < i; j++) {
+                if((edges[i].src == edges[j].src && edges[i].dest == edges[j].dest)
+                || (edges[i].src == edges[j].dest && edges[i].dest == edges[j].src)){
+                    i--;
+                }
+            }
+        }
+        i++;
     }
 }
 
@@ -129,40 +158,56 @@ int main(int argc, char const *argv[]) {
 
     // defining graph by edges
     vector<Edge> edges;
-    for (int i = 0; i < n; i++) {
-        int d = (i+1) % n;
-        Edge e;
-        e = {i, d};
-        edges.push_back(e);
-    }
+    gen_rand_edge_list(e, n, edges);
+    // cerr << "edge list created" << endl;
+    // for (Edge e: edges) {
+    //     cerr << e.src << " -> " << e.dest << endl;
+    // }
+
+    // for (int i = 0; i < n; i++) {
+    //     int d = (i+1) % n;
+    //     Edge e;
+    //     e = {i, d, 1};
+    //     edges.push_back(e);
+    // }
 
     // vector<Edge> edges =
     // {
-    //     {0, 1}, {1, 2}, {2, 0}, {2, 1}, {3, 2}, {4, 5}, {5, 4}
+    //     {0, 1, 1}, {1, 2, 1}, {2, 0, 1}, {2, 1, 1}, {3, 2, 1}, {4, 5, 1}, {5, 4, 1}
     // };
 
     Graph graph(edges, n);
+    // cerr << "graph created" << endl;
     printGraph(graph);
+    // cerr << "graph printed" << endl;
     adj_matrix_from_graph(graph);
+    // cerr << "adj matrix printed" << endl;
 
     // Defining vertices
 
     vector<int> xcoor;
     vector<int> ycoor;
-    // vector<double> cost;
     vector<bool> goal;
     //vector<bool> visited;
+    // vector<double> cost;
 
+    xcoor.resize(n);
+    ycoor.resize(n);
+    goal.resize(n);
+    // visited.resize(n);
+    // cost.resize(n);
 
     for (int i = 0; i < n; i++) {
-        xcoor.push_back(i);
-        ycoor.push_back(0);
-        goal.push_back(false);
-        //visited.push_back(false);
+        xcoor[i] = i;
+        ycoor[i] = 0;
+        goal[i] = false;
+        //visited[i] = false;
     }
 
-    //selecting goal node
-    int g_node = n-1;
+    //selecting starting and goal node
+    const int s_node = 0;
+    const int g_node = n-1;
+
     goal[g_node] = true;
     GOAL_X_COR = xcoor[g_node];
     GOAL_Y_COR = ycoor[g_node];
@@ -170,14 +215,12 @@ int main(int argc, char const *argv[]) {
     // creating the governing priority queue for A*
     priority_queue<p_di, vector<p_di>, greater<p_di> > openSet;
 
-    //selecting starting node
-    int s_node = 0;
 
     openSet.push(make_pair(0.0, s_node));
 
     // This array will be used to reconstruct the path found
     vector<int> cameFrom;
-    cameFrom.resize(n, -3);
+    cameFrom.resize(n, -1);
     cameFrom[s_node] = s_node;
 
     //test
@@ -214,12 +257,21 @@ int main(int argc, char const *argv[]) {
         }
         openSet.pop();
 
-        for (int neighbor: graph.adjList[current]) {
+        for (pair<int, int> neighbor: graph.adjList[current]) {
+            //WIP: for (pair<int, int> neighbor: graph.adjList[current]) used to be for (int neighbor: graph.adjList[current])
+            // fix implications in this block
+            // considerations:
+            //      - weight contained in the pair struct should be included the fScore calculation
             double tentative_gScore = gScore[current] + d(current, neighbor);
             if (tentative_gScore < gScore[neighbor]) {
                 cameFrom[neighbor] = current;
                 gScore[neighbor] = tentative_gScore;
                 fScore[neighbor] = tentative_gScore + h(xcoor[neighbor], ycoor[neighbor]);
+
+                // WIP: is_in_pq() could be replaced by using the "visited" to keep track of what nodes are in the PQ
+                // Remember that is_in_pq() is kinda inefficient.
+                // Also need to check what should we do if the node is already
+                // in the PQ but has a worse fScore
                 if (!is_in_pq(neighbor, openSet)) {
                     openSet.push(make_pair(fScore[neighbor], neighbor));
                 }
