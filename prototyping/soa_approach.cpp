@@ -7,6 +7,16 @@
 #include <vector>
 #include <time.h>
 
+/*
+This approach is made to accomodate any type of graph, including random graphs.
+However in the context of my work (pathfidning trhough space for game AI) the
+graphs we deal with are anything but random. They are grid-like. Where each node
+usually only connects to the ones that are physically neighboring it.
+With this in mind I will be rewriting this to work on 2D square grids
+(and maybe expand to 3D). This also helps with the problem of randomly generating
+new graphs that can make good use of the euclidian-distance heuristic.
+*/
+
 using namespace std;
 
 typedef pair<double, int> p_di;
