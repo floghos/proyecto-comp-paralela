@@ -29,16 +29,19 @@ void reconstruct_path(int current, vector<int> const &cameFrom) {
     */
 
     vector<int> path;
+void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom) {
+    vector<Coord> path;
     path.push_back(current);
-    while (cameFrom[current] != current) {
-        current = cameFrom[current];
+
+    while (!(cameFrom[current.x][current.y] == current)) {
+        current = cameFrom[current.x][current.y];
         path.push_back(current);
     }
 
     //print pathf
     cout << "Path found:";
     for (int i = path.size()-1; i >= 0; i--) {
-        cout << " --> " << path[i];
+        cout << " --> " << path[i].x << "," << path[i].y;
     }
     cout << endl;
 }
