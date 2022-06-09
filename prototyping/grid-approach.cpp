@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <time.h>
+#include <fstream>
 // #include <limits.h>
 
 using namespace std;
@@ -216,15 +217,18 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
 
 int main(int argc, char const *argv[]) {
     int n, m;
-    cin >> n >> m;
+    // cin >> n >> m;
+    ifstream file("testmap.txt");
+    file >> n >> m;
 
     vector<vector<char>> map(n, vector<char> (m, '.'));
     Coord s, g;
+
     cerr << "reading input" << endl;
     /* read map from std input*/
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            cin >> map[i][j];
+            file >> map[i][j];
             if (map[i][j] == 's') {
                 s = {i, j};
                 map[i][j] == '.';
