@@ -20,3 +20,8 @@ https://stackoverflow.com/questions/2041517/random-simple-connected-graph-genera
     * Wiki pseudocode: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
     * python & C++ implementation: https://www.redblobgames.com/pathfinding/a-star/implementation.html
     *
+
+* Profiling with Valgrind :
+https://developer.mantidproject.org/ProfilingWithValgrind.html
+    1. Compile with the -g flag >> g++ -g source.cpp
+    2. Run >> valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes <executable> [args...]

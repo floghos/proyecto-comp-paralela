@@ -34,9 +34,9 @@ void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom) {
 
     //print pathf
     cout << "Path found:";
-    for (int i = path.size()-1; i >= 0; i--) {
-        cout << " --> " << path[i].x << "," << path[i].y;
-    }
+    // for (int i = path.size()-1; i >= 0; i--) {
+    //     cout << " --> " << path[i].x << "," << path[i].y;
+    // }
     cout << endl;
 }
 
@@ -119,7 +119,7 @@ public:
     }
 
     double h(Coord cell) {
-        cerr << "calculating H of " << cell.x << "," << cell.y << endl;
+        // cerr << "calculating H of " << cell.x << "," << cell.y << endl;
         return sqrt((pow((cell.x - goal.x), 2) + pow((cell.y - goal.y), 2)));
     }
 
@@ -159,16 +159,16 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
     if (graph.n == 0 || graph.m == 0) return;
     // priority_queue<p_dc, vector<p_dc>, greater<p_dc> > openSet;
     // replaced the pair<double, coord> PQ for this one cuz I couldn't make the former work
-    cerr << "creating PQ" << endl;
+    // cerr << "creating PQ" << endl;
     priority_queue<pdp, vector<pdp>, greater<pdp>> openSet;
 
     //inserting first element to the PQ (starting node)
-    cerr << "pushing starting point in PQ" << endl;
+    // cerr << "pushing starting point in PQ" << endl;
     pair<int, int> s = make_pair(_start.x, _start.y);
     openSet.push(make_pair(0.f, s));
 
     //map used to reconstruct path after reaching goal.
-    cerr << "allocating memory for auxiliary vectors" << endl;
+    // cerr << "allocating memory for auxiliary vectors" << endl;
 
     vector<vector<Coord>> cameFrom(graph.n, vector<Coord> (graph.m, {-1, -1}));
     // We'll say that the starting cell's parent is itself
@@ -182,15 +182,15 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
     fScore[_start.x][_start.y] = graph.h(_start);
 
     // just testing!!! this counter will limit the number of iterations to prevent endless loops
-    int forceQuit = 0;
+    // int forceQuit = 0;
 
-    while (!openSet.empty() && forceQuit < 1000) {
-        forceQuit++;
+    while (!openSet.empty()) {
+        // forceQuit++;
 
         pair<int, int> aux = openSet.top().second;
         Coord current = {aux.first, aux.second};
         openSet.pop();
-        cerr << aux.first << "," << aux.second << endl;
+        // cerr << aux.first << "," << aux.second << endl;
         if (current == graph.goal) {
             cerr << "goal reached, recreating path" << endl;
             reconstruct_path(current, cameFrom);
@@ -219,12 +219,13 @@ int main(int argc, char const *argv[]) {
     int n, m;
     // cin >> n >> m;
     ifstream file("testmap.txt");
+    // ifstream file("asciimap.txt");
     file >> n >> m;
 
     vector<vector<char>> map(n, vector<char> (m, '.'));
     Coord s, g;
 
-    cerr << "reading input" << endl;
+    cerr << "Reading input" << endl;
     /* read map from std input*/
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
@@ -240,11 +241,11 @@ int main(int argc, char const *argv[]) {
         }
     }
 
-    cerr << "creating graph" << endl;
+    cerr << "Creating graph" << endl;
     Graph graph(map);
     graph.setGoal(g);
 
-    cerr << "running a_star" << endl;
+    cerr << "Running a_star..." << endl;
     a_star_search(s, g, graph);
 
     return 0;
