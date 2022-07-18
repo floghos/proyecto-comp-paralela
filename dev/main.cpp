@@ -5,6 +5,7 @@
 #include <float.h>
 #include <queue>
 #include <map>
+#include <string>
 #include <vector>
 #include <time.h>
 #include <fstream>
@@ -23,44 +24,14 @@ bool operator==(const Coord& lhs, const Coord& rhs) {
 
 typedef pair<double, Coord> p_dc;
 
-void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom) {
-    vector<Coord> path;
-    path.push_back(current);
-
-    while (!(cameFrom[current.x][current.y] == current)) {
-        current = cameFrom[current.x][current.y];
-        path.push_back(current);
-    }
-
-    // cout << "Path found:";
-    // for (int i = path.size()-1; i >= 0; i--) {
-    //     cout << " --> " << path[i].x << "," << path[i].y;
-    // }
-    cout << endl;
-}
-
-
-struct Cell {
-    // I don't know if Coords will be necessary, since they can be calculated
-    // based on the index, but it might be faster to just save them.
-    bool wall = false;
-    int w = 1;
-    // w stands for weight
-    // The idea for this is that walking through this cell has a greater cost
-    // in other words, the cost of every incoming edge needs to add w.
-
-    // Seriously considering ditching this struct and make the graph just a
-    // matrix of chars
-};
-
-
 // A class to represent a graph object
 class Graph {
 public:
     // a vector of vectors to represent an adjacency list
     int n = 0;
     int m = 0;
-    vector<vector<Cell>> grid;
+    //vector<vector<Cell>> grid;
+    vector<vector<char>> grid;
 
 
     Coord goal;
@@ -69,22 +40,11 @@ public:
 
     // Graph Constructor
     Graph(vector<vector<char>> const &map) {
-        // resize the vector to hold `n` elements of type `vector<int>`
         n = map.size();
         m = map[0].size();
-        grid.resize(n, vector<Cell> (m));
+        grid = map;
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (map[i][j] == '.') {
-                    grid[i][j].wall = false;
-                }
-                if (map[i][j] == '#') {
-                    grid[i][j].wall = true;
-                }
-                // grid[i][j] = map[i][j];
-            }
-        }
+//         print_matrix(grid);
     }
 
     void setGoal(Coord g) {
@@ -106,7 +66,7 @@ public:
                 //and also avoid self
                 if (i == 0 && j == 0) continue;
 
-                if (grid[_x][_y].wall == false) {
+                if (grid[_x][_y] == '.') { // used to be grid[_x][_y].wall == false
                     neighbors.push_back(Coord {_x, _y});
                     //neighbors.push_back(grid[_x][_y].pos); //let's see if I don't need to use .pos
                 }
@@ -132,6 +92,60 @@ public:
         }
     }
 };
+
+void print_matrix(vector<vector<char>> const &matrix) {
+    int n = matrix.size();
+    int m = matrix[0].size();
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+}
+
+void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom, Graph graph) {
+    vector<Coord> path;
+    path.push_back(current);
+
+    while (!(cameFrom[current.x][current.y] == current)) {
+        current = cameFrom[current.x][current.y];
+        path.push_back(current);
+    }
+
+    vector<vector<char>> sol = graph.grid; // sol is shor for solution
+//     cout << "Path found:";
+    for (int i = path.size()-1; i >= 0; i--) {
+        if (i == path.size()-1) {
+            sol[path[i].x][path[i].y] = 's';
+        } else if (i == 0) {
+            sol[path[i].x][path[i].y] = 'g';
+        } else {
+            sol[path[i].x][path[i].y] = 'o';
+        }
+//         cout << " --> " << path[i].x << "," << path[i].y;
+    }
+//     cout << endl;
+
+//     print_matrix(sol);
+
+    ofstream out_file;
+    out_file.open("solution.txt");
+
+    for (int i = 0; i < graph.n; i++) {
+        for (int j = 0; j < graph.m; j++) {
+            out_file << sol[i][j] << " ";
+        }
+        out_file << endl;
+    }
+    out_file.close();
+
+}
+
+
+
 
 typedef pair<double, pair<int,int> > pdp;
 
@@ -190,7 +204,7 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
         // cerr << aux.first << "," << aux.second << endl;
         if (current == graph.goal) {
             cerr << "goal reached, recreating path" << endl;
-            reconstruct_path(current, cameFrom);
+            reconstruct_path(current, cameFrom, graph);
             return;
         }
 
@@ -215,8 +229,16 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
 int main(int argc, char const *argv[]) {
     int n, m;
     // cin >> n >> m;
-    ifstream file("testmap.txt");
-    // ifstream file("asciimap.txt");
+//     ifstream file("testmap.txt");
+//     ifstream file("asciimap.txt");
+    string filepath;
+    if (argc == 1) {
+        cout << "Please provide a file path containing the map\n";
+        return 0 ;
+    }
+    filepath = argv[1];
+    ifstream file(filepath);
+
     file >> n >> m;
 
     vector<vector<char>> map(n, vector<char> (m, '.'));
