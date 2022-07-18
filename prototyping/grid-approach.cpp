@@ -32,8 +32,7 @@ void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom) {
         path.push_back(current);
     }
 
-    //print pathf
-    cout << "Path found:";
+    // cout << "Path found:";
     // for (int i = path.size()-1; i >= 0; i--) {
     //     cout << " --> " << path[i].x << "," << path[i].y;
     // }
@@ -44,13 +43,10 @@ void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom) {
 struct Cell {
     // I don't know if Coords will be necessary, since they can be calculated
     // based on the index, but it might be faster to just save them.
-    // Coord pos; // so far it has been unneeded
     bool wall = false;
-    // bool goal = false;
     int w = 1;
     // w stands for weight
     // The idea for this is that walking through this cell has a greater cost
-    // in other words, I... LOVE... YOU... *cough* excuse me...
     // in other words, the cost of every incoming edge needs to add w.
 
     // Seriously considering ditching this struct and make the graph just a
@@ -65,6 +61,7 @@ public:
     int n = 0;
     int m = 0;
     vector<vector<Cell>> grid;
+
 
     Coord goal;
     // int GOAL_X_COR;
@@ -226,17 +223,16 @@ int main(int argc, char const *argv[]) {
     Coord s, g;
 
     cerr << "Reading input" << endl;
-    /* read map from std input*/
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             file >> map[i][j];
             if (map[i][j] == 's') {
                 s = {i, j};
-                map[i][j] == '.';
+                map[i][j] = '.';
             }
             if (map[i][j] == 'g') {
                 g = {i, j};
-                map[i][j] == '.';
+                map[i][j] = '.';
             }
         }
     }

@@ -36,7 +36,7 @@ def convert_to_ascii(image):
 
 def main():
     # path = input("Enter path of PNG image:\n")
-    path = "mazed.png"
+    path = "maze.png"
     try:
         image = PIL.Image.open(path)
     except:
