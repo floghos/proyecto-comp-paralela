@@ -12,6 +12,14 @@
 #include "./metrictime2.hpp"
 // #include <limits.h>
 
+/*
+ * This old_main.cpp file was created to compare the old is_in_pq() function to the new implementation of it.
+ * The old one, as shown here, creates a copy of the PQ, then empties it while checking every element in order
+ * to see if a given element is within the PQ.
+ * In contrast, the new one keeps a map (matrix) that keeps track of each node that has been added to or removed
+ * from the PQ.
+ */
+
 using namespace std;
 
 
@@ -133,7 +141,7 @@ void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom, Grap
 //     print_matrix(sol);
 
     ofstream out_file;
-    out_file.open("solution.txt");
+    out_file.open("solution_old.txt");
 
     for (int i = 0; i < graph.n; i++) {
         for (int j = 0; j < graph.m; j++) {
@@ -150,28 +158,20 @@ void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom, Grap
 
 typedef pair<double, pair<int,int> > pdp;
 
-// bool is_in_pq(Coord v, priority_queue<pdp, vector<pdp>, greater<pdp>> pq) {
-//     /*
-//     Checks if a given Coord element is present in the given PQ
-//     It recieves the PQ as a copy by value and empties it, checking one
-//     element at a time
-//     */
-//     while (!pq.empty()) {
-//         pair<int, int> t = pq.top().second;
-//         Coord check = {t.first, t.second};
-//         if (check == v) return true;
-//         pq.pop();
-//     }
-//     return false;
-// }
-bool is_in_pq(Coord const v, vector<vector<bool>> const &pqTracker) {
+bool is_in_pq(Coord v, priority_queue<pdp, vector<pdp>, greater<pdp>> pq) {
     /*
-    Checks if a given Coord element is present in the openSet PQ
+    Checks if a given Coord element is present in the given PQ
+    It recieves the PQ as a copy by value and empties it, checking one
+    element at a time
     */
-    if (pqTracker[v.x][v.y] == true) return true;
+    while (!pq.empty()) {
+        pair<int, int> t = pq.top().second;
+        Coord check = {t.first, t.second};
+        if (check == v) return true;
+        pq.pop();
+    }
     return false;
 }
-
 
 
 void a_star_search(Coord _start, Coord _goal, Graph graph) {
@@ -180,13 +180,10 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
     // replaced the pair<double, coord> PQ for this one cuz I couldn't make the former work
     // cerr << "creating PQ" << endl;
     priority_queue<pdp, vector<pdp>, greater<pdp>> openSet;
-    vector<vector<bool>> pqTracker(graph.n, vector<bool> (graph.m, false)); // keeps track of which nodes have been added to the openSet PQ
-
     //inserting first element to the PQ (starting node)
     // cerr << "pushing starting point in PQ" << endl;
     pair<int, int> s = make_pair(_start.x, _start.y);
     openSet.push(make_pair(0.f, s));
-    pqTracker[_start.x][_start.y] = true;
 
     //map used to reconstruct path after reaching goal.
     // cerr << "allocating memory for auxiliary vectors" << endl;
@@ -213,7 +210,6 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
         pair<int, int> aux = openSet.top().second;
         Coord current = {aux.first, aux.second};
         openSet.pop();
-        pqTracker[aux.first][aux.second] = false;
 
         // cerr << aux.first << "," << aux.second << endl;
         if (current == graph.goal) {
@@ -230,15 +226,11 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
                 gScore[neighbor.x][neighbor.y] = tentative_gScore;
                 fScore[neighbor.x][neighbor.y] = tentative_gScore + graph.h(neighbor);
 
-//                 if (!is_in_pq(neighbor, openSet)) {
-//                     pair<int, int> crds = make_pair(neighbor.x, neighbor.y);
-//                     openSet.push(make_pair(fScore[neighbor.x][neighbor.y], crds));
-//                 }
-                if (!is_in_pq(neighbor, pqTracker)) {
+                if (!is_in_pq(neighbor, openSet)) {
                     pair<int, int> crds = make_pair(neighbor.x, neighbor.y);
                     openSet.push(make_pair(fScore[neighbor.x][neighbor.y], crds));
-                    pqTracker[neighbor.x][neighbor.y] = true;
                 }
+
             }
         }
     }
@@ -284,8 +276,9 @@ int main(int argc, char const *argv[]) {
     graph.setGoal(g);
 
     cerr << "Running a_star..." << endl;
-    TIMERSTART(aStar_avnc2);
+    TIMERSTART(aStar_avnc1);
     a_star_search(s, g, graph);
-    TIMERSTOP(aStar_avnc2);
+    TIMERSTOP(aStar_avnc1);
+
     return 0;
 }

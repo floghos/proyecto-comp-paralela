@@ -1,0 +1,41 @@
+function reconstruct_path(cameFrom, current)
+    total_path := {current}
+    while current in cameFrom.Keys:
+        current := cameFrom[current]
+        total_path.prepend(current)
+    return total_path
+
+function A_Star(start, goal, h)
+    cameFrom := an empty map
+    gScore := map with default value of Infinity
+    gScore[start] := 0
+
+    fScore[start] := h(start)
+    fScore := map with default value of Infinity
+
+    openSet := {start} // PQ sorted by fScore
+
+    while openSet is not empty
+        current := the node in openSet having the lowest fScore value
+        n_lowest := the n nodes in openSet having the lowest fScore value
+        if current = goal
+            return reconstruct_path(cameFrom, current)
+        openSet.Remove(current)
+
+        #Parallel section
+        {
+            for each node in n_lowest
+                for each neighbor of node current
+                    tentative_gScore := gScore[node] + d(node, neighbor)
+                    if tentative_gScore < gScore[neighbor]
+                        cameFrom[neighbor] := node
+                        gScore[neighbor] := tentative_gScore
+                        fScore[neighbor] := tentative_gScore + h(neighbor)
+                        if neighbor not in openSet
+                            openSet.add(neighbor)
+        }
+
+    return failure
+
+
+// Source: https://en.wikipedia.org/wiki/A*_search_algorithm
