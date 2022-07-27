@@ -39,14 +39,10 @@ public:
     // a vector of vectors to represent an adjacency list
     int n = 0;
     int m = 0;
-    //vector<vector<Cell>> grid;
     vector<vector<char>> grid;
 
 
     Coord goal;
-    // int GOAL_X_COR;
-    // int GOAL_Y_COR;
-
     // Graph Constructor
     Graph(vector<vector<char>> const &map) {
         n = map.size();
@@ -77,7 +73,6 @@ public:
 
                 if (grid[_x][_y] == '.') { // used to be grid[_x][_y].wall == false
                     neighbors.push_back(Coord {_x, _y});
-                    //neighbors.push_back(grid[_x][_y].pos); //let's see if I don't need to use .pos
                 }
             }
         }
@@ -85,7 +80,6 @@ public:
     }
 
     double h(Coord cell) {
-        // cerr << "calculating H of " << cell.x << "," << cell.y << endl;
         return sqrt((pow((cell.x - goal.x), 2) + pow((cell.y - goal.y), 2)));
     }
 
@@ -138,8 +132,6 @@ void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom, Grap
     }
 //     cout << endl;
 
-//     print_matrix(sol);
-
     ofstream out_file;
     out_file.open("solution_old.txt");
 
@@ -152,8 +144,6 @@ void reconstruct_path(Coord current, vector<vector<Coord>> const &cameFrom, Grap
     out_file.close();
 
 }
-
-
 
 
 typedef pair<double, pair<int,int> > pdp;
@@ -176,17 +166,12 @@ bool is_in_pq(Coord v, priority_queue<pdp, vector<pdp>, greater<pdp>> pq) {
 
 void a_star_search(Coord _start, Coord _goal, Graph graph) {
     if (graph.n == 0 || graph.m == 0) return;
-    // priority_queue<p_dc, vector<p_dc>, greater<p_dc> > openSet;
-    // replaced the pair<double, coord> PQ for this one cuz I couldn't make the former work
-    // cerr << "creating PQ" << endl;
     priority_queue<pdp, vector<pdp>, greater<pdp>> openSet;
     //inserting first element to the PQ (starting node)
-    // cerr << "pushing starting point in PQ" << endl;
     pair<int, int> s = make_pair(_start.x, _start.y);
     openSet.push(make_pair(0.f, s));
 
     //map used to reconstruct path after reaching goal.
-    // cerr << "allocating memory for auxiliary vectors" << endl;
 
     vector<vector<Coord>> cameFrom(graph.n, vector<Coord> (graph.m, {-1, -1}));
     // We'll say that the starting cell's parent is itself
@@ -201,17 +186,12 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
     vector<vector<double>> fScore(graph.n, vector<double> (graph.m, DBL_MAX));
     fScore[_start.x][_start.y] = graph.h(_start);
 
-    // just testing!!! this counter will limit the number of iterations to prevent endless loops
-    // int forceQuit = 0;
-
     while (!openSet.empty()) {
-        // forceQuit++;
 
         pair<int, int> aux = openSet.top().second;
         Coord current = {aux.first, aux.second};
         openSet.pop();
 
-        // cerr << aux.first << "," << aux.second << endl;
         if (current == graph.goal) {
             cerr << "goal reached, recreating path" << endl;
             reconstruct_path(current, cameFrom, graph);

@@ -23,8 +23,11 @@ https://stackoverflow.com/questions/2041517/random-simple-connected-graph-genera
 
 * Profiling with Valgrind :
 https://developer.mantidproject.org/ProfilingWithValgrind.html
-    1. Compile with the -g flag like: >> g++ -g source.cpp
-    2. Run >> valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes <executable> [args...]
+    1. Compile with the -g flag like: $ g++ -g source.cpp
+    2. Run: $ valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes <executable> [args...]
         2.1 Note: Use the executable's path, like so: ./<executable>
-    3. To visualize with kcachegrind just run: >> kcachegrind callgrind.out.xxxx
+    3. To visualize with kcachegrind just run: $ kcachegrind callgrind.out.xxxx
 
+* Compiling with multiple files:
+    Now that I've split the code into different files, remember to add all relevant .cpp 's as arguments for the compiler, like so:
+    $ g++ main.cpp Graph.cpp
