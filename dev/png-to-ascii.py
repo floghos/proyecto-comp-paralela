@@ -1,9 +1,9 @@
 import PIL.Image
 import numpy as np
 
-ASCII_CHARS = ["#", ".", "s", "g"]
+# ASCII_CHARS = ["#", ".", "s", "g"]
 
-def convert_to_ascii(image):
+def convert_to_ascii(image, s):
     width, height = image.size
     im = image.convert('RGB')
     res = np.chararray((width, height))
@@ -12,14 +12,15 @@ def convert_to_ascii(image):
     for i in range(width) :
         for j in range(height):
             r, g, b = im.getpixel((i, j))
-            if (r == g == b == 0): #black is wall
+            if (r < 20 and g < 20 and b < 20): #black is wall (or black enough)
                 res[i, j] = '#'
-            if (r == 255 and g == 0 and b == 0): # red is goal
+            if (r > 200 and g < 20 and b < 20): # red is goal
                 res[i, j] = 'g'
-            if (r == 0 and g == 255 and b == 0): # green is start
+            if (r < 20 and g > 200 and b < 20): # green is start
                 res[i, j] = 's'
 
-    f = open("asciimap.txt", "w")
+    output_name = s + "_ascii.txt"
+    f = open(output_name, "w")
     dims = str(width) + ' ' + str(height) + '\n'
     f.write(dims)
     for i in range(width) :
@@ -35,15 +36,17 @@ def convert_to_ascii(image):
 
 
 def main():
-    # path = input("Enter path of PNG image:\n")
-    path = "maze.png"
+    #path = "maze"
+    path = input("Enter name of PNG image: \n")
+    path = path + ".png"
     try:
         image = PIL.Image.open(path)
+        # image.show()
+        print("Converting png to ASCII...\n")
+        convert_to_ascii(image, path)
+        print("Done\n")
     except:
-        print (path, "is not a valid path to an image.")
-
-    convert_to_ascii(image)
-    # image.show()
+        print (path, "is not a valid path to an image.\n")
 
 
 
