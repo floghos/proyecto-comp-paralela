@@ -106,8 +106,8 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
     gScore[_start.x][_start.y] = 0;
 
     // fScore saves the sum of each node's gScore + h value
-    vector<vector<double>> fScore(graph.n, vector<double> (graph.m, DBL_MAX));
-    fScore[_start.x][_start.y] = graph.h(_start);
+//     vector<vector<double>> fScore(graph.n, vector<double> (graph.m, DBL_MAX));
+//     fScore[_start.x][_start.y] = graph.h(_start);
 
 
     while (!openSet.empty()) {
@@ -128,11 +128,12 @@ void a_star_search(Coord _start, Coord _goal, Graph graph) {
             if (tentative_gScore < gScore[neighbor.x][neighbor.y]) {
                 cameFrom[neighbor.x][neighbor.y] = current;
                 gScore[neighbor.x][neighbor.y] = tentative_gScore;
-                fScore[neighbor.x][neighbor.y] = tentative_gScore + graph.h(neighbor);
+                double fScore = tentative_gScore + graph.h(neighbor);
+//                 fScore[neighbor.x][neighbor.y] = tentative_gScore + graph.h(neighbor);
 
                 if (!is_in_pq(neighbor, pqTracker)) {
                     pair<int, int> crds = make_pair(neighbor.x, neighbor.y);
-                    openSet.push(make_pair(fScore[neighbor.x][neighbor.y], crds));
+                    openSet.push(make_pair(fScore, crds));
                     pqTracker[neighbor.x][neighbor.y] = true;
                 }
             }

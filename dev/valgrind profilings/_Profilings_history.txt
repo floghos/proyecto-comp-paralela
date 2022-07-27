@@ -1,0 +1,7 @@
+This is an attempt to keep a registry of valgrind profilings at different stages of development.
+
+callgrind.out.4847:
+    Profiling right after changing is_in_pq() to stop emtying the PQ and instead use a secondary structure (matrix) to keep track of which cells have been inserted.
+    Date: 07/21/2022
+
+
