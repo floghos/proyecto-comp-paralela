@@ -7,9 +7,7 @@
 #ifndef MYPQ_H
 #define MYPQ_H
 
-struct Coord {
-    int x, y;
-};
+
 // using namespace std;
 
 // typedef pair<double, pair<int,int> > pdp; // pair double-pair
@@ -41,10 +39,9 @@ class MyPQ {
 
 private:
     std::vector<std::pair<K, V>> mArray;
-    std::map<std::pair<K, V>, int> mMap;
-//     int mSize;
+    std::map<std::pair<K, V>, unsigned int> mMap;
 
-    void swap(int a, int b) {
+    void swap(unsigned int a, unsigned int b) {
         std::pair<K, V> aux = mArray[a];
         mArray[a] = mArray[b];
         mArray[b] = aux;
@@ -65,13 +62,13 @@ public:
     }
 
     void push(K key, V id) {
-        int n = mArray.size()-1;
+        unsigned int n = mArray.size()-1;
         n++;
 
         std::pair<K, V> newEntry = std::make_pair(key, id);
         mArray.push_back(newEntry);
         mMap[newEntry] = n;
-        int i = n;
+        unsigned int i = n;
         while (i > 1) {
             if (mArray[i] < mArray[i/2]) {
                 swap(i, i/2);
@@ -80,12 +77,41 @@ public:
                 break;
             }
         }
-//         mSize++;
     }
 
     void pop() {
-        /* ... */
-//         mSize--;
+        /*
+         *TO DO :
+         * Need to fix behaviour when popping elements on an empty PQ.
+         * i.e. when mArray.size()-1 = 0
+         */
+//         std::pair<K, V> ans = mArray[1];
+        unsigned int n = mArray.size()-1;
+
+        mMap.erase(mArray[1]);
+        mArray[1] = mArray[n];
+        mArray.pop_back();
+        mMap[mArray[1]] = 1;
+        n--;
+        unsigned int i = 1;
+        while (2*i <= n) {
+            if ((2*i+1 > n) || (mArray[2*i] < mArray[2*i+1])) {
+                if (mArray[i] > mArray[2*i]) {
+                    swap(i, 2*i);
+                    i = 2*i;
+                } else {
+                    break;
+                }
+            } else {
+                if (mArray[i] > mArray[2*i+1]) {
+                    swap(i, 2*i+1);
+                    i = 2*i+1;
+                } else {
+                    break;
+                }
+            }
+        }
+//         return ans;
     }
 
     void decreaseKey(V id, K newKey) {
